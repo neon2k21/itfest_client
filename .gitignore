@@ -34,8 +34,8 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-# firebase
+# # firebase
 firebase_config.js
 
-# ip
+# # ip
 ipconfig.js
