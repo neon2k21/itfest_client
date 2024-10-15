@@ -7,6 +7,8 @@ import {PermissionsAndroid} from 'react-native';
 import { firebaseConfig } from "./firebase_config";
 import { firebase } from "@react-native-firebase/messaging";
 import { NotificationListener, requestUserPermission } from "./notification_helper";
+import RNCalendarEvents from 'react-native-calendar-events';
+
 
 firebase.initializeApp(firebaseConfig)
 
@@ -18,6 +20,7 @@ export default function App() {
 useEffect(()=>{
      requestUserPermission()
      NotificationListener()
+     
  },[])
 
   
