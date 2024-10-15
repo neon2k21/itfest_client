@@ -18,7 +18,7 @@ export async function requestUserPermission(){
     }
   }
 
-  async function GetFCMToken(){
+ export async function GetFCMToken(){
 
     const sendToken=(token)=>{
         var myHeaders = new Headers();

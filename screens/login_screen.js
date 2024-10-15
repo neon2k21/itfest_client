@@ -4,6 +4,7 @@ import { View, Text, TextInput, TouchableOpacity, Alert,Image, StyleSheet } from
 import { heightPercentageToDP, widthPercentageToDP } from "react-native-responsive-screen";
 import { ip_address } from "../ipconfig";
 import CryptoJS from 'crypto-js';
+import { GetFCMToken } from "../notification_helper";
 
 
 
@@ -80,12 +81,15 @@ export default function LoginScreen(){
         fetch(ip_address+'/getUser', requestOptions)
           .then(response => response.json())
           .then(result => {
-            console.log(result)
+            console.log(result[0].id)
             global.user_id = result[0].id
             if(result != "Данные не совпадают! Проверьте и повторите попытку") {
                 navigate('Главный экран')
+                GetFCMToken()
             }
             else {
+
+                
                  Alert.alert('Авторизация',
                     result ,[
                     {

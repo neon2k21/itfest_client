@@ -2,21 +2,13 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { ip_address } from '../ipconfig';
-import RNCalendarEvents from 'react-native-calendar-events';
+import * as AddCalendarEvent from 'react-native-add-calendar-event';
+import moment from 'moment';  // для удобной работы с датами
 
 const TaskDetailScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { task } = route.params;
-
-  useEffect(() => {
-    // Запрос разрешения на доступ к календарю
-    RNCalendarEvents.requestPermissions().then(status => {
-      if (status !== 'authorized') {
-        console.log('Доступ к календарю не предоставлен');
-      }
-    });
-  }, []);
 
   const setTaskCompleted = () => {
     var myHeaders = new Headers();
@@ -45,21 +37,30 @@ const TaskDetailScreen = () => {
     console.log('Задача выполнена');
   };
 
-  const addToCalendar = async () => {
-    try {
-      const startDate = new Date(task.date_of_creation.split(' ')[0].split('/').reverse().join('-') + 'T' + task.date_of_creation.split(' ')[1]);
-      const endDate = new Date(task.deadline.split(' ')[0].split('/').reverse().join('-') + 'T' + task.deadline.split(' ')[1]);
-
-      const eventId = await RNCalendarEvents.saveEvent(task.name, {
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-        notes: task.description,
-      });
-
-      console.log('Задача добавлена в календарь с ID:', eventId);
-    } catch (error) {
-      console.log('Ошибка при добавлении задачи в календарь:', error);
-    }
+  const addToCalendar = () => {
+    const startDate = moment(task.date_of_creation, 'DD/MM/YYYY HH:mm').toISOString();
+    const endDate = moment(task.deadline, 'DD/MM/YYYY HH:mm').toISOString();
+  
+    const eventConfig = {
+      title: task.name,
+      startDate,
+      endDate,
+      notes: task.description,
+      navigationBarIOS: {
+        tintColor: 'orange',
+        backgroundColor: 'black',
+      },
+    };
+  
+    AddCalendarEvent.presentEventCreatingDialog(eventConfig)
+      .then(eventInfo => {
+        if (eventInfo.action === 'CANCELED') {
+          console.log('Пользователь отменил создание события');
+        } else {
+          console.log('Событие добавлено с ID:', eventInfo.eventIdentifier);
+        }
+      })
+      .catch(error => console.log('Ошибка при добавлении задачи в календарь:', error));
   };
 
   return (
@@ -70,7 +71,6 @@ const TaskDetailScreen = () => {
       <Text style={styles.info}>Дедлайн: {task.deadline}</Text>
       <Text style={styles.info}>Статус: {task.completed ? 'Выполнено' : 'Не выполнено'}</Text>
 
-      {/* Контейнер для двух верхних кнопок */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
           <Text style={styles.buttonText}>Назад</Text>
@@ -81,7 +81,6 @@ const TaskDetailScreen = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Отдельная кнопка для добавления в календарь */}
       <TouchableOpacity style={styles.addCalendarButton} onPress={addToCalendar}>
         <Text style={styles.buttonText}>Добавить в календарь</Text>
       </TouchableOpacity>
