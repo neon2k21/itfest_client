@@ -3,12 +3,14 @@ import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import { ip_address } from '../ipconfig';
 import { useFocusEffect } from '@react-navigation/core';
+ let dayData = { completed: 0, uncompleted: 0 }
+    let weekData = { completed: 0, uncompleted: 0 }
+    let monthData = { completed: 0, uncompleted: 0 }
 
-const Tasks_Dashboard = () => {
 
-    dayData = { completed: 0, uncompleted: 0 }
-    weekData = { completed: 0, uncompleted: 0 }
-    monthData = { completed: 0, uncompleted: 0 }
+    const Tasks_Dashboard = () => {
+
+   
     const [tasks, setTasks] = useState([])
 
     const getAllDayTasks = () => {
@@ -49,7 +51,7 @@ const Tasks_Dashboard = () => {
 
         fetch(ip_address + '/createGraphByFilterForWeek', requestOptions)
             .then(response => response.json())
-            .then(result => { console.log(result); weekData = result })
+            .then(result => {  weekData = result })
             .catch(error => console.log('error', error));
     }
 
